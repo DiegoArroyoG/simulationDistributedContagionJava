@@ -23,27 +23,26 @@ public class Broker extends Thread {
 
         public void check_in(Inet4Address register_ip) throws IOException, ClassNotFoundException {
                 Socket client = null;
-                System.out.println(register_ip.toString());
                 try {
                         client = new Socket(register_ip, 7777);
                         ObjectInputStream in = new ObjectInputStream(client.getInputStream());
                         DataOutputStream out = new DataOutputStream(client.getOutputStream());
-                        out.writeUTF(ip.toString() + ':' + 7777);
-                        List<String> sBrokers = (List<String>) in.readObject();
+                        out.writeUTF("1," + ip.toString());
+                        this.brokers = (List<String>) in.readObject();
 
-                        for (String broker : sBrokers) {
-                                brokers.add(broker);
+                        for (String broker : brokers) {
                                 System.out.println("------------------>" + broker);
                         }
-                        /*
-                         * for (int i = 0; i < brokers.size(); i++) { client = new
-                         * Socket(Inet4Address.getByName(brokers.get(i).split(":")[0]),
-                         * Integer.parseInt(brokers.get(i).split(":")[1])); in = new
-                         * DataInputStream(client.getInputStream()); out = new
-                         * DataOutputStream(client.getOutputStream()); out.writeUTF(ip.toString() + ':'
-                         * + port); } System.out.println("Check in exitoso"); for (int i = 0; i <
-                         * brokers.size(); i++) System.out.println(brokers.get(i));
-                         */
+                        
+                        for (int i = 0; i < brokers.size(); i++) 
+                        { 
+                                client = new Socket(Inet4Address.getByName(brokers.get(i)), 7777);  
+                                out = new DataOutputStream(client.getOutputStream()); 
+                                out.writeUTF("2," + ip.toString()); 
+                        } 
+                        System.out.println("Check in exitoso"); 
+                        for (int i = 0; i <brokers.size(); i++) System.out.println(brokers.get(i));
+                        
 
                 } catch (UnknownHostException e) {
                         System.out.println("Socket:" + e.getMessage());
