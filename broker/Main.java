@@ -10,7 +10,7 @@ public class Main {
 
     private static String[] line;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         Inet4Address dir_origen = null , dir_destino = null;
         int port = 0;
         List <Pais> paises_broker = leerFichero();
@@ -26,8 +26,11 @@ public class Main {
         for(Pais a : paises_broker){
             a.setBroker(bro);
         }
-
+        bro.start_Threads();
+        System.out.println("***Antes del Chech_In***");
         bro.check_in(dir_destino);
+        System.out.println("***Despues del Chech_In***");
+        
     }
 
     private static List<Pais> leerFichero() {
