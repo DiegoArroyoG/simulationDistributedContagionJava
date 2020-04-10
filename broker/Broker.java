@@ -1,83 +1,94 @@
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.util.List;
 
 import pais.Pais;
 
 
-public class Broker{
+public class Broker extends Thread{
 
         Inet4Address ip;
-        Inet4Address register_ip;
         int port;
         List<Pais> paises = new ArrayList<Pais>();
-        List<String> brokers = new 
+        List<String> brokers = new ArrayList<String>();
 
-        public Broker(Inet4Addres ip, int port, Inet4Addres register_ip, List<Pais> paises)
+        public Broker(Inet4Addres ip, int port, List<Pais> paises)
         {
                 this.ip = ip;
                 this.port = port;
-                this.register_ip = register_ip;
                 this.paises = paises;
         }
 
-        public void check_in()
+        public void check_in(Inet4Address register_ip)
         {
                 try{
-                        s = new Socket(register_ip, 1024);    
+                        Socket client = new Socket(register_ip, 1024);    
                         DataInputStream in = new DataInputStream(s.getInputStream());
                         DataOutputStream out =new DataOutputStream(s.getOutputStream());
                         out.writeUTF(ip.toString()+':'+port);
-                        String brokers = in.readUTF();
-                        System.out.println("Leí: "+ data) ; 
-                     }catch (UnknownHostException e){
-                          System.out.println("Socket:"+e.getMessage());
-                     }catch (EOFException e){
-                          System.out.println("EOF:"+e.getMessage());
-                     }catch (IOException e){
-                          System.out.println("readline:"+e.getMessage());
-                     }finally {if(s!=null) try { s.close(); }catch (IOException e){
-                          System.out.println("close:"+e.getMessage());}}
-                    }
+                        String sBrokers = in.readUTF();
+
+                        for(String broker : sBrokers.split(" ")) brokers.add(broker);
+                        
+                        for(int i=0; i<brokers.size(); i++)
+                        {
+                                client = new Socket(brokers.get(i).split(":")[0] , brokers.get(i).split(":")[1]);
+                                in = new DataInputStream(s.getInputStream());
+                                out =new DataOutputStream(s.getOutputStream());
+                                out.writeUTF(ip.toString()+':'+port);
+                        }
+                        System.out.println("Check in exitoso");
+                        for(int i=0; i<brokers.size(); i++) System.out.println(brokers.get(i));
+
+                }catch (UnknownHostException e){
+                        System.out.println("Socket:"+e.getMessage());
+                }catch (EOFException e){
+                        System.out.println("EOF:"+e.getMessage());
+                }catch (IOException e){
+                        System.out.println("readline:"+e.getMessage());
+                }finally {if(s!=null) try { s.close(); }catch (IOException e){
+                        System.out.println("close:"+e.getMessage());}
+                }
         }
 
-    def check_in(self):
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            client.connect((self.register_ip, 1024))
-            client.send((str(self.ip)+":"+str(self.port)).encode())
-    brokers = client.recv(4096)
-    self.brokers = brokers.decode().split()
-        for i in range (len(self.brokers)):
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            client.connect((self.brokers[i].split(':')[0], int(self.brokers[i].split(':')[1])))
-            client.send((str(self.ip) + ":" + str(self.port)).encode())
-    print("Check in exitoso" + (' '.join([str(broker) for broker in self.brokers])))
+        public void start_listen() {    
+		try{
+                        ServerSocket server = new ServerSocket(port); //Inicializar socket con el puerto
 
-    def append_new(self, broker_to_append):
-            self.brokers.append(broker_to_append)
-    print("[*] Nuevo broker añadido" + broker_to_append)
+                        while(true) 
+                        {
+                                Socket clientSocket = server.accept(); //Esperar en modo escucha al cliente
+                                this.start(clientSocket); //Establecer conexion con el socket del cliente(Hostname, Puerto)
+                        }
+			   
+			} catch(IOException e) {
+			      System.out.println("Listen socket:"+e.getMessage());
+			}
+		
+        }
+        
+        public void run() {
+                try {
+                        clientSocket = aClientSocket; 
+                        in = new DataInputStream(clientSocket.getInputStream()); //Canal de entrada cliente
+                        out =new DataOutputStream(clientSocket.getOutputStream()); //Canal de salida cliente
+                        this.start(); //hilo
+                	                                    
+                        String data = in.readUTF(); //Datos desde cliente
+                        if(data.contains(":") && !data.contains(ip.toString()))
+                                brokers.add(data);
+                        else System.out.println("Todo bien");;
 
-    def connector(self, socket_broker):
-    msg = socket_broker.recv(1024).decode()
-        if ':' in msg:
-            self.append_new(msg)
-            else:
-    print("[*] Mensaje " + msg)
-            socket_broker.send("Recibido")
-                    socket_broker.close()
-
-    def start_listen(self):
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            server.bind((self.ip, self.port))
-            server.listen(5)
-    print("Broker has started")
-        while True:
-    socket_broker, ip_port = server.accept()
-    print("[***] Broker intentado conectarse")
-    connect = threading.Thread(target=self.connector, args=(socket_broker,))
-            connect.start()
-
-    def getPaises(self):
-
-    print(self.paises[0].check_in())
+                } catch (EOFException e){
+                        System.out.println("EOF:"+e.getMessage());
+                } catch(IOException e){
+                        System.out.println("readline:"+e.getMessage());
+                }catch(IOException e){
+                        System.out.println("Connection:"+e.getMessage()); 
+                }finally{
+                       try {
+                           clientSocket.close(); 
+                }catch (IOException e){}}
+              } 
 
 }
