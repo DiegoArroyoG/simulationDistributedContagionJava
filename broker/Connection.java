@@ -4,27 +4,27 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 
 public class Connection extends Thread {
     
     DataInputStream in;
-    Socket clientSocket;
+    ObjectOutputStream out;
     Broker broker;
 
-    public Connection (Socket clientSocket, Broker broker) {
-       try {
-           this.broker = broker;
-    	   this.clientSocket = clientSocket; 
-    	   in = new DataInputStream(clientSocket.getInputStream()); //Canal de entrada cliente
-    	   this.start(); //hilo
-	   } catch(IOException e){
-		   System.out.println("Connection:"+e.getMessage());
-       }
+    public Connection (Broker broker) {
+        this.broker = broker;
+    }
+
+    public void reply(DataInputStream in, ObjectOutputStream out)
+    {
+        this.in = in;
+        this.out = out;
+        this.start();
     }
 
     public void run() {
         String[] info=null;
-        
         try {
             info = in.readUTF().split(",");
         } catch (IOException e1) {
@@ -33,11 +33,11 @@ public class Connection extends Thread {
         }
         if (info[0].equalsIgnoreCase("1")) {
             try {
-                System.out.println("Se conecto uno nuevo con ip" + info[1] + "...");
-                ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
-                out.writeObject(broker.getBrokers());
+                System.out.println("Se conecto uno nuevo con ip " + info[1] + "...");
+                List<String> brokers = broker.getBrokers();
+                brokers.add(broker.getIp());
+                out.writeObject(brokers);
                 broker.addBroker(info[1]);
-                clientSocket.close();
             } catch (Exception e) {
                 System.out.println("Error de entrada/salida." + e.getMessage());
             }
@@ -45,10 +45,8 @@ public class Connection extends Thread {
         else if(info[0].equalsIgnoreCase("2")) {
             try {
                 System.out.println("Se esta presentando uno nuevo"+ info[1] + "...");
-                ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
                 broker.addBroker(info[1]);
                 out.writeObject("Agregado por " + broker.getIp());
-                clientSocket.close();
             } catch (Exception e) {
                 System.out.println("Error de entrada/salida." + e.getMessage());
             }

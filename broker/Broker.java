@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -13,12 +14,14 @@ import java.net.UnknownHostException;
 public class Broker extends Thread {
 
         Inet4Address ip;
+        Connection connection;
         List<Pais> paises = new ArrayList<Pais>();
         List<String> brokers = new ArrayList<String>();
 
         public Broker(Inet4Address ip, List<Pais> paises) {
                 this.ip = ip;
                 this.paises = paises;
+                connection = new Connection(this);
         }
 
         public void check_in(Inet4Address register_ip) throws IOException, ClassNotFoundException {
@@ -27,7 +30,7 @@ public class Broker extends Thread {
                         client = new Socket(register_ip, 7777);
                         ObjectInputStream in = new ObjectInputStream(client.getInputStream());
                         DataOutputStream out = new DataOutputStream(client.getOutputStream());
-                        out.writeUTF("1," + ip.toString());
+                        out.writeUTF("1," + ip.getHostAddress());
                         this.brokers = (List<String>) in.readObject();
 
                         for (String broker : brokers) {
@@ -38,7 +41,7 @@ public class Broker extends Thread {
                         { 
                                 client = new Socket(Inet4Address.getByName(brokers.get(i)), 7777); 
                                 out = new DataOutputStream(client.getOutputStream()); 
-                                out.writeUTF("2," + ip.toString()); 
+                                out.writeUTF("2," + ip.getHostAddress()); 
                                 System.out.println(new ObjectInputStream(client.getInputStream()).readUTF());
 
                         } 
@@ -62,26 +65,29 @@ public class Broker extends Thread {
                 }
         }
 
-        public void start_listen() {
+        public void start_listen()
+        {
                 try {
-                        System.out.println("Esperando conexion con otros brokers...");
-                        ServerSocket listenSocket = new ServerSocket(7777); // Inicializar socket con el puerto
-
                         while (true) {
-                                Socket clientSocket = listenSocket.accept(); // Esperar en modo escucha al cliente
-                                new Connection(clientSocket, this); // Establecer conexion con el socket del
-                                                                    // cliente(Hostname, Puerto)
+                                ServerSocket ListenSocket = new ServerSocket(7777);
+                                System.out.println("Esperando conexión...");
+                                Socket clientSocket = ListenSocket.accept();
+                                System.out.println("Se conecto un broker...");
+                                DataInputStream entrada = new DataInputStream(clientSocket.getInputStream());
+                                ObjectOutputStream salida = new ObjectOutputStream(clientSocket.getOutputStream());
+                                
+                                connection.reply(entrada, salida);
+                                
+                                ListenSocket.close();
                         }
-
-                } catch (IOException e) {
-                        System.out.println("Listen socket:" + e.getMessage());
-                }
-
+                    } catch (Exception e) {
+                        System.out.println("Error de entrada/salida." + e.getMessage());
+                    }
         }
 
         public String getIp()
         {
-                return ip.toString();
+                return ip.getHostAddress();
         }
 
         public List<String> getBrokers() {
@@ -93,8 +99,8 @@ public class Broker extends Thread {
                 this.brokers.add(broker);
         }
 
-        public void start() {
-                this.run();
+        public void init() {
+                this.start();
                 start_listen();
         }
 

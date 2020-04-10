@@ -25,7 +25,7 @@ public class Main {
             bro.check_in(dir_destino);
         }
 
-        bro.start();        
+        bro.init();        
     }
 
     private static List<Pais> leerFichero() {
