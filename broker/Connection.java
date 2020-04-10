@@ -24,6 +24,7 @@ public class Connection extends Thread {
 
     public void run() {
         String type=null;
+        
         try {
             type = in.readUTF();
         } catch (IOException e1) {

@@ -12,25 +12,20 @@ public class Main {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         Inet4Address dir_origen = null , dir_destino = null;
-        int port = 0;
         List <Pais> paises_broker = leerFichero();
-
-        if(args.length < 4){
-            dir_origen =  (Inet4Address) Inet4Address.getByName(args[0]);
-            port = Integer.parseInt(args[1]);
-            dir_destino = (Inet4Address) Inet4Address.getByName(args[2]);
-        }
-
+        
+        dir_origen =  (Inet4Address) Inet4Address.getLocalHost();
         Broker bro = new Broker(dir_origen, paises_broker);
-
         for(Pais a : paises_broker){
             a.setBroker(bro);
         }
-        bro.start();
-        System.out.println("***Antes del Chech_In***");
-        bro.check_in(dir_destino);
-        System.out.println("***Despues del Chech_In***");
         
+        if(args.length > 0){
+            dir_destino = (Inet4Address) Inet4Address.getByName(args[0]);
+            bro.check_in(dir_destino);
+        }
+
+        bro.start();        
     }
 
     private static List<Pais> leerFichero() {
