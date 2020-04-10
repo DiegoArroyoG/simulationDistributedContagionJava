@@ -1,14 +1,44 @@
+import java.net.Inet4Address;
+import java.net.InetAddress;
+
+import pais.Pais;
 
 
 public class Broker{
 
-    public Broker(ip, port, register_ip, paises)
-        def __init__(self, ip, port, register_ip, paises):
-        self.ip = ip
-        self.port = port
-        self.brokers = []
-        self.register_ip = register_ip
-        self.paises = paises
+        Inet4Address ip;
+        Inet4Address register_ip;
+        int port;
+        List<Pais> paises = new ArrayList<Pais>();
+        List<String> brokers = new 
+
+        public Broker(Inet4Addres ip, int port, Inet4Addres register_ip, List<Pais> paises)
+        {
+                this.ip = ip;
+                this.port = port;
+                this.register_ip = register_ip;
+                this.paises = paises;
+        }
+
+        public void check_in()
+        {
+                try{
+                        s = new Socket(register_ip, 1024);    
+                        DataInputStream in = new DataInputStream(s.getInputStream());
+                        DataOutputStream out =new DataOutputStream(s.getOutputStream());
+                        out.writeUTF(ip.toString()+':'+port);
+                        String brokers = in.readUTF();
+                        System.out.println("Leí: "+ data) ; 
+                     }catch (UnknownHostException e){
+                          System.out.println("Socket:"+e.getMessage());
+                     }catch (EOFException e){
+                          System.out.println("EOF:"+e.getMessage());
+                     }catch (IOException e){
+                          System.out.println("readline:"+e.getMessage());
+                     }finally {if(s!=null) try { s.close(); }catch (IOException e){
+                          System.out.println("close:"+e.getMessage());}}
+                    }
+        }
 
     def check_in(self):
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
