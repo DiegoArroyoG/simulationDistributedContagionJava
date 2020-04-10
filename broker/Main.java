@@ -21,12 +21,12 @@ public class Main {
             dir_destino = (Inet4Address) Inet4Address.getByName(args[2]);
         }
 
-        Broker bro = new Broker(dir_origen, port, paises_broker);
+        Broker bro = new Broker(dir_origen, paises_broker);
 
         for(Pais a : paises_broker){
             a.setBroker(bro);
         }
-        bro.start_Threads();
+        bro.start();
         System.out.println("***Antes del Chech_In***");
         bro.check_in(dir_destino);
         System.out.println("***Despues del Chech_In***");
