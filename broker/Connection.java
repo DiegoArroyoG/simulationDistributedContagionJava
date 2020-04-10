@@ -23,24 +23,32 @@ public class Connection extends Thread {
     }
 
     public void run() {
-        String type=null;
+        String[] info=null;
         
         try {
-            type = in.readUTF();
+            info = in.readUTF().split(",");
         } catch (IOException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
-        if (type.equalsIgnoreCase("1")) {
+        if (info[0].equalsIgnoreCase("1")) {
             try {
-                while (true) {
-                    ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
-                    System.out.println("Se conecto uno...");
-                    out.writeObject(broker.getBrokers());
-                    //String[] mensajeRecibido = in.readUTF().split(":");
-                    //broker.brokers.add(mensajeRecibido[0].trim());
-                    //clientSocket.close();
-                }
+                System.out.println("Se conecto uno nuevo con ip" + info[1] + "...");
+                ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
+                out.writeObject(broker.getBrokers());
+                broker.addBroker(info[1]);
+                clientSocket.close();
+            } catch (Exception e) {
+                System.out.println("Error de entrada/salida." + e.getMessage());
+            }
+        }
+        else if(info[0].equalsIgnoreCase("2")) {
+            try {
+                System.out.println("Se esta presentando uno nuevo"+ info[1] + "...");
+                ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
+                broker.addBroker(info[1]);
+                out.writeObject("Agregado por " + broker.getIp());
+                clientSocket.close();
             } catch (Exception e) {
                 System.out.println("Error de entrada/salida." + e.getMessage());
             }

@@ -36,12 +36,14 @@ public class Broker extends Thread {
                         
                         for (int i = 0; i < brokers.size(); i++) 
                         { 
-                                client = new Socket(Inet4Address.getByName(brokers.get(i)), 7777);  
+                                client = new Socket(Inet4Address.getByName(brokers.get(i)), 7777); 
                                 out = new DataOutputStream(client.getOutputStream()); 
                                 out.writeUTF("2," + ip.toString()); 
+                                System.out.println(new ObjectInputStream(client.getInputStream()).readUTF());
+
                         } 
                         System.out.println("Check in exitoso"); 
-                        for (int i = 0; i <brokers.size(); i++) System.out.println(brokers.get(i));
+                        for(int i = 0; i <brokers.size(); i++) System.out.println(brokers.get(i));
                         
 
                 } catch (UnknownHostException e) {
@@ -77,8 +79,18 @@ public class Broker extends Thread {
 
         }
 
+        public String getIp()
+        {
+                return ip.toString();
+        }
+
         public List<String> getBrokers() {
                 return this.brokers;
+        }
+
+        public void addBroker(String broker)
+        {
+                this.brokers.add(broker);
         }
 
         public void start() {
