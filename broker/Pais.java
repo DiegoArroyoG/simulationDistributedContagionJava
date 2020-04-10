@@ -7,9 +7,9 @@ public class Pais {
     private int poblacion;
     private int infectados;
     private int recuperados;
-    private int vulnerable;
-    private int beta;
-    private int gamma;
+    private float vulnerable;
+    private float beta;
+    private float gamma;
     private Inet4Address dir_ip;
     private List<Pais> vecinos;
     private Broker broker_mine;
@@ -20,8 +20,8 @@ public class Pais {
         this.infectados = Integer.parseInt(infectados);
         this.recuperados = 0;
         this.vulnerable = Integer.parseInt(poblacion) - Integer.parseInt(infectados);
-        this.beta = 1 - Integer.parseInt(pAis);
-        this.gamma = Integer.parseInt(g);
+        this.beta = 1 - Float.parseFloat(pAis);
+        this.gamma = Float.parseFloat(g);
         this.dir_ip = (Inet4Address) Inet4Address.getByName(ip);
 	}
 

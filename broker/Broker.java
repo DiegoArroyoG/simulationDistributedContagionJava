@@ -24,13 +24,14 @@ public class Broker extends Thread{
                 this.paises = paises;
         }
 
-        public void check_in(Inet4Address register_ip)
+        public void check_in(Inet4Address register_ip) throws IOException
         {
-                Socket client = new Socket(register_ip, 1024);
+                Socket client = null;
+                System.out.println(register_ip.toString());
                 try{
-                            
-                        DataInputStream in = new DataInputStream(s.getInputStream());
-                        DataOutputStream out =new DataOutputStream(s.getOutputStream());
+                        client = new Socket(register_ip, 1024);
+                        DataInputStream in = new DataInputStream(client.getInputStream());
+                        DataOutputStream out =new DataOutputStream(client.getOutputStream());
                         out.writeUTF(ip.toString()+':'+port);
                         String sBrokers = in.readUTF();
 
@@ -66,7 +67,7 @@ public class Broker extends Thread{
                                 clientSocket = server.accept(); //Esperar en modo escucha al cliente
                                 this.start(); //Establecer conexion con el socket del cliente(Hostname, Puerto)
                         }
-			   
+                        
 			} catch(IOException e) {
 			      System.out.println("Listen socket:"+e.getMessage());
 			}
