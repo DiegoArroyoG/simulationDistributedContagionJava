@@ -14,14 +14,12 @@ import java.net.UnknownHostException;
 public class Broker extends Thread {
 
         Inet4Address ip;
-        Connection connection;
         List<Pais> paises = new ArrayList<Pais>();
         List<String> brokers = new ArrayList<String>();
 
         public Broker(Inet4Address ip, List<Pais> paises) {
                 this.ip = ip;
                 this.paises = paises;
-                connection = new Connection(this);
         }
 
         public void check_in(Inet4Address register_ip) throws IOException, ClassNotFoundException {
@@ -40,9 +38,10 @@ public class Broker extends Thread {
                         for (int i = 0; i < brokers.size(); i++) 
                         { 
                                 client = new Socket(Inet4Address.getByName(brokers.get(i)), 7777); 
+                                in = new ObjectInputStream(client.getInputStream());
                                 out = new DataOutputStream(client.getOutputStream()); 
                                 out.writeUTF("2," + ip.getHostAddress()); 
-                                System.out.println(new ObjectInputStream(client.getInputStream()).readUTF());
+                                System.out.println((String)in.readObject());
 
                         } 
                         System.out.println("Check in exitoso"); 
@@ -68,20 +67,19 @@ public class Broker extends Thread {
         public void start_listen()
         {
                 try {
-                        while (true) {
+                        while (true) 
+                        {
                                 ServerSocket ListenSocket = new ServerSocket(7777);
                                 System.out.println("Esperando conexión...");
                                 Socket clientSocket = ListenSocket.accept();
                                 System.out.println("Se conecto un broker...");
-                                DataInputStream entrada = new DataInputStream(clientSocket.getInputStream());
-                                ObjectOutputStream salida = new ObjectOutputStream(clientSocket.getOutputStream());
-                                
-                                connection.reply(entrada, salida);
-                                
+                             
+                                new Connection(this).reply(clientSocket);
+                           
                                 ListenSocket.close();
                         }
                     } catch (Exception e) {
-                        System.out.println("Error de entrada/salida." + e.getMessage());
+                        System.out.println("Error de entrada/salida BROKER." + e.getMessage());
                     }
         }
 

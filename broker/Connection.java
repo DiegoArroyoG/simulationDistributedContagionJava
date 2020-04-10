@@ -8,6 +8,7 @@ import java.util.List;
 
 public class Connection extends Thread {
     
+    Socket clientSocket;
     DataInputStream in;
     ObjectOutputStream out;
     Broker broker;
@@ -16,11 +17,18 @@ public class Connection extends Thread {
         this.broker = broker;
     }
 
-    public void reply(DataInputStream in, ObjectOutputStream out)
-    {
-        this.in = in;
-        this.out = out;
-        this.start();
+    public void reply(Socket clientSocket)
+    {   
+        this.clientSocket = clientSocket;
+        try {
+            this.in = new DataInputStream(this.clientSocket.getInputStream());
+            this.out = new ObjectOutputStream(this.clientSocket.getOutputStream());
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        this.start(); 
     }
 
     public void run() {
@@ -37,7 +45,6 @@ public class Connection extends Thread {
                 List<String> brokers = broker.getBrokers();
                 brokers.add(broker.getIp());
                 out.writeObject(brokers);
-                broker.addBroker(info[1]);
             } catch (Exception e) {
                 System.out.println("Error de entrada/salida." + e.getMessage());
             }

@@ -14,14 +14,14 @@ public class Main {
         Inet4Address dir_origen = null , dir_destino = null;
         List <Pais> paises_broker = leerFichero();
         
-        dir_origen =  (Inet4Address) Inet4Address.getLocalHost();
+        dir_origen =  (Inet4Address) Inet4Address.getByName(args[0]);
         Broker bro = new Broker(dir_origen, paises_broker);
         for(Pais a : paises_broker){
             a.setBroker(bro);
         }
         
-        if(args.length > 0){
-            dir_destino = (Inet4Address) Inet4Address.getByName(args[0]);
+        if(args.length > 1){
+            dir_destino = (Inet4Address) Inet4Address.getByName(args[1]);
             bro.check_in(dir_destino);
         }
 
