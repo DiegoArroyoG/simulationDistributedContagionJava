@@ -22,11 +22,10 @@ public class Broker extends Thread {
                 this.paises = paises;
         }
 
-        public int check_in(Inet4Address register_ip, int valor) throws IOException, ClassNotFoundException {
+        public int call(Inet4Address dir_destino, int valor) throws IOException, ClassNotFoundException {
                 Socket client = null;
                 try {
-                        int infectados = -1;
-                        client = new Socket(register_ip, 7777);
+                        client = new Socket(dir_destino, 7777);
                         ObjectInputStream in = new ObjectInputStream(client.getInputStream());
                         DataOutputStream out = new DataOutputStream(client.getOutputStream());
                         if (valor == 1) {
@@ -51,8 +50,7 @@ public class Broker extends Thread {
                                 return -1;
                         } else if (valor == 2) {
                                 out.writeUTF("3," + ip.getHostAddress());
-                                infectados = (int) in.readObject();
-                                return infectados;
+                                return (int) in.readObject();
                         }
                 } catch (UnknownHostException e) {
                         System.out.println("Socket:" + e.getMessage());
@@ -100,6 +98,22 @@ public class Broker extends Thread {
                 this.brokers.add(broker);
         }
 
+        public void addPais(Pais pais)
+        {
+                System.out.println("llego el pais "+ pais.getNombrePais() +" con "+ pais.getInfectados() +" infectados");
+                paises.add(pais);
+                paises.get(paises.size()-1).start();
+        }
+
+        public int getCalculo() {
+                /**int x = 0;
+                for (Pais p : this.paises) {
+                        x = x + p.getPoblacion();
+                }
+                return x;**/
+                return paises.size();
+        }
+
         public void init() {
                 this.start();
                 start_listen();
@@ -107,29 +121,44 @@ public class Broker extends Thread {
 
         public void run() {
                 int calculo;
-                System.out.println("ESTOY LEYENDO A MIS PAISES");
                 try {
-                        int infectados;
+                        int peso;
                         Inet4Address dir_destino;
                         calculo = getCalculo();
                         for (Pais p : paises) {
-                                p.setPoblacionTotal(calculo);
+                                p.setPeso(calculo);
                         }
                         for (Pais p : paises) {
                                 p.start();
                         }
                         while (true) {
-                                if (brokers.isEmpty())
-                                        sleep(2000);
 
                                 for (String b : brokers) {
                                         dir_destino = (Inet4Address) Inet4Address.getByName(b);
-                                        infectados = this.check_in(dir_destino, 2);
-                                        System.out.println("PESO -----> " + infectados);
+                                        peso = this.call(dir_destino, 2);
+                                        if((peso-paises.size())/2>0)
+                                        {
+                                                for(int i=0; i<(peso-paises.size())/2;i++)
+                                                {
+                                                        Socket client = new Socket(dir_destino, 7777);
+                                                        ObjectInputStream in = new ObjectInputStream(client.getInputStream());
+                                                        ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
+                                                        out.writeObject(paises.get(i));
+                                                        System.out.println((String) in.readObject());
+                                                        if((boolean) in.readObject())
+                                                        {
+                                                                System.out.println(paises.get(i).getNombrePais()+" con "+paises.get(i).getInfectados()+"infectados, enviado a " +dir_destino.getHostAddress());
+                                                                paises.remove(i);
+                                                        }
+                                                        client.close();
+                                                }
+                                        }
+                                        sleep(500);
                                 }
                                 calculo = getCalculo();
+
                                 for (Pais p : paises) {
-                                        p.setPoblacionTotal(calculo);
+                                        p.setPeso(calculo);
                                 }
                         }
 
@@ -145,17 +174,4 @@ public class Broker extends Thread {
                 }
         }
 
-        public void getPaises() {
-                for (Pais p : paises) {
-                        System.out.println("-->" + p.getNombrePais());
-                }
-        }
-
-        public int getCalculo() {
-                int x = 0;
-                for (Pais p : this.paises) {
-                        x = x + p.getPoblacion();
-                }
-                return x;
-        }
 }

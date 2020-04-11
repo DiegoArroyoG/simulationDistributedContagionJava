@@ -1,70 +1,89 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 
 public class Connection extends Thread {
-    
+
     Socket clientSocket;
-    DataInputStream in;
+    ObjectInputStream in;
     ObjectOutputStream out;
     Broker broker;
 
-    public Connection (Broker broker) {
+    public Connection(Broker broker) {
         this.broker = broker;
     }
 
-    public void reply(Socket clientSocket)
-    {   
+    public void reply(Socket clientSocket) {
         this.clientSocket = clientSocket;
         try {
-            this.in = new DataInputStream(this.clientSocket.getInputStream());
+            this.in = new ObjectInputStream(this.clientSocket.getInputStream());
             this.out = new ObjectOutputStream(this.clientSocket.getOutputStream());
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
-        this.start(); 
+
+        this.start();
     }
 
     public void run() {
-        String[] info=null;
+
+        Object read = null;
         try {
-            info = in.readUTF().split(",");
-        } catch (IOException e1) {
+            read = in.readObject();
+        } catch (ClassNotFoundException e2) {
             // TODO Auto-generated catch block
-            e1.printStackTrace();
+            e2.printStackTrace();
+        } catch (IOException e2) {
+            // TODO Auto-generated catch block
+            e2.printStackTrace();
         }
-        if (info[0].equalsIgnoreCase("1")) {
+        if(read instanceof Pais)
+        {
+            Pais pais = (Pais) read;
+            broker.addPais(pais);
             try {
-                System.out.println("Se conecto uno nuevo con ip " + info[1] + "...");
-                List<String> brokers = broker.getBrokers();
-                brokers.add(broker.getIp());
-                out.writeObject(brokers);
-            } catch (Exception e) {
-                System.out.println("Error de entrada/salida." + e.getMessage());
-            }
-        }
-        else if(info[0].equalsIgnoreCase("2")) {
-            try {
-                System.out.println("Se esta presentando uno nuevo"+ info[1] + "...");
-                broker.addBroker(info[1]);
-                out.writeObject("Agregado por " + broker.getIp());
-            } catch (Exception e) {
-                System.out.println("Error de entrada/salida." + e.getMessage());
-            }
-        }
-        else if(info[0].equalsIgnoreCase("3")){
-            
-            try {
-                System.out.println("Me estan pidiendo mi PESO " + info[1] + "...");
-                out.writeObject(broker.getCalculo());
+                out.writeObject(true);
             } catch (IOException e) {
-                System.out.println("Error de PESO" + e.getMessage());
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        else{    
+            String[] info=null;
+            info = read.toString().split(",");
+            if (info[0].equalsIgnoreCase("1")) {
+                try {
+                    System.out.println("Se conecto uno nuevo con ip " + info[1] + "...");
+                    List<String> brokers = broker.getBrokers();
+                    brokers.add(broker.getIp());
+                    out.writeObject(brokers);
+                } catch (Exception e) {
+                    System.out.println("Error de entrada/salida." + e.getMessage());
+                }
+            }
+            else if(info[0].equalsIgnoreCase("2")) {
+                try {
+                    System.out.println("Se esta presentando uno nuevo"+ info[1] + "...");
+                    broker.addBroker(info[1]);
+                    out.writeObject("Agregado por " + broker.getIp());
+                } catch (Exception e) {
+                    System.out.println("Error de entrada/salida." + e.getMessage());
+                }
+            }
+            else if(info[0].equalsIgnoreCase("3")){
+                
+                try {
+                    System.out.println("Me estan pidiendo mi PESO " + info[1] + "...");
+                    out.writeObject(broker.getCalculo());
+                } catch (IOException e) {
+                    System.out.println("Error de PESO" + e.getMessage());
+                }
             }
         }
     }

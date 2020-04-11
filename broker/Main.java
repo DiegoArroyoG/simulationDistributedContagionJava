@@ -11,6 +11,7 @@ public class Main {
     private static String[] line;
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
+        System.out.println(Inet4Address.getLocalHost().getHostAddress());
         Inet4Address dir_origen = null , dir_destino = null;
         
         dir_origen =  (Inet4Address) Inet4Address.getByName(args[0]);
@@ -23,7 +24,7 @@ public class Main {
 
         if(args.length > 1){
             dir_destino = (Inet4Address) Inet4Address.getByName(args[1]);
-            bro.check_in(dir_destino, 1);
+            bro.call(dir_destino, 1);
         }
 
         bro.init();      

@@ -5,7 +5,7 @@ import java.util.List;
 public class Pais extends Thread {
         private String nombre;
         private int poblacion;
-        private int totalPoblacion;
+        private int peso;
         private int infectados;
         private int recuperados;
         private float vulnerable;
@@ -25,7 +25,7 @@ public class Pais extends Thread {
                 this.beta = 1 - Float.parseFloat(pAis);
                 this.gamma = Float.parseFloat(g);
                 this.dir_ip = (Inet4Address) Inet4Address.getByName(ip);
-                this.totalPoblacion = 0;
+                this.peso = 0;
         }
 
         public void setBroker(Broker bro) {
@@ -44,20 +44,25 @@ public class Pais extends Thread {
                 return this.poblacion;
         }
 
+        public int getInfectados() {
+                return this.infectados;
+        }
+
+        public void setPeso(int calculo) {
+                this.peso = calculo;
+        }
+
         public void run() {
                 while (true) {
                         this.infectados = this.infectados + 1;
                         try {
-                                sleep(this.totalPoblacion * 1);
+                                System.out.println(this.peso*1000);
+                                sleep(this.peso * 1000);
                         } catch (InterruptedException e) {
                                 // TODO Auto-generated catch block
                                 e.printStackTrace();
                         }
                 }
 
-        }
-
-        public void setPoblacionTotal(int calculo) {
-                this.totalPoblacion = calculo;
         }
 }
