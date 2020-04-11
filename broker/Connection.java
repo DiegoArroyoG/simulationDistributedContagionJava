@@ -58,5 +58,14 @@ public class Connection extends Thread {
                 System.out.println("Error de entrada/salida." + e.getMessage());
             }
         }
+        else if(info[0].equalsIgnoreCase("3")){
+            
+            try {
+                System.out.println("Me estan pidiendo mi PESO " + info[1] + "...");
+                out.writeObject(broker.getCalculo());
+            } catch (IOException e) {
+                System.out.println("Error de PESO" + e.getMessage());
+            }
+        }
     }
 }

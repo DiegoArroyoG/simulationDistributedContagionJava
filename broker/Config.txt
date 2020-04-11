@@ -1,3 +1,10 @@
-Colombia, 1000, 1, 0.6, 0.1, 127.0.0.1
-Ecuador, 1000, 1, 0.6, 0.1, 127.0.0.1
-Peru, 1000, 1, 0.6, 0.1, 127.0.0.2
+Colombia, 1000, 1, 0.6, 0.1, 25.129.246.44, Ecuador-Peru-Brazil-Venezuela
+Ecuador, 1000, 1, 0.6, 0.1, 25.129.246.44, Peru-Colombia
+Peru, 1000, 1, 0.6, 0.1, 25.129.248.8, Ecuador-Bolivia-Colombia-Brazil-Chile
+Chile, 1000, 1, 0.6, 0.1, 25.129.248.8, Argentina-Peru-Bolivia
+Argentina, 1000, 1, 0.6, 0.1, 25.129.248.8, Chile-Uruguay-Brazil-Paraguay-Bolivia-Brazil
+Bolivia, 1000, 1, 0.6, 0.1, 25.129.248.8, Peru-Chile-Argentina-Paraguay-Brazil
+Venezuela, 1000, 1, 0.6, 0.1, 25.129.248.8, Colombia-Brazil
+Brazil, 1000, 1, 0.6, 0.1, 25.129.248.8, Venezuela-Colombia-Peru-Bolivia-Paraguay-Argentina-Uruguay
+Uruguay, 1000, 1, 0.6, 0.1, 25.129.248.8, Argentina-Brazil
+Paraguay, 1000, 1, 0.6, 0.1, 25.129.248.8, Bolivia-Argentina-Brazil
