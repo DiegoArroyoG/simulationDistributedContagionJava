@@ -27,9 +27,9 @@ public class Broker extends Thread {
                 try {
                         client = new Socket(dir_destino, 7777);
                         ObjectInputStream in = new ObjectInputStream(client.getInputStream());
-                        DataOutputStream out = new DataOutputStream(client.getOutputStream());
+                        ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
                         if (valor == 1) {
-                                out.writeUTF("1," + ip.getHostAddress());
+                                out.writeObject("1," + ip.getHostAddress());
                                 this.brokers = (List<String>) in.readObject();
 
                                 for (String broker : brokers) {
@@ -39,8 +39,8 @@ public class Broker extends Thread {
                                 for (int i = 0; i < brokers.size(); i++) {
                                         client = new Socket(Inet4Address.getByName(brokers.get(i)), 7777);
                                         in = new ObjectInputStream(client.getInputStream());
-                                        out = new DataOutputStream(client.getOutputStream());
-                                        out.writeUTF("2," + ip.getHostAddress());
+                                        out = new ObjectOutputStream(client.getOutputStream());
+                                        out.writeObject("2," + ip.getHostAddress());
                                         System.out.println((String) in.readObject());
 
                                 }
@@ -49,7 +49,7 @@ public class Broker extends Thread {
                                         System.out.println(brokers.get(i));
                                 return -1;
                         } else if (valor == 2) {
-                                out.writeUTF("3," + ip.getHostAddress());
+                                out.writeObject("3," + ip.getHostAddress());
                                 return (int) in.readObject();
                         }
                 } catch (UnknownHostException e) {
