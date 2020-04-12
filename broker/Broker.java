@@ -5,14 +5,13 @@ import java.util.ArrayList;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.ServerSocket;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.net.UnknownHostException;
 
-public class Broker extends Thread {
-
+public class Broker extends Thread implements Serializable{
+        
         Inet4Address ip;
         List<Pais> paises = new ArrayList<Pais>();
         List<String> brokers = new ArrayList<String>();
@@ -26,8 +25,8 @@ public class Broker extends Thread {
                 Socket client = null;
                 try {
                         client = new Socket(dir_destino, 7777);
-                        ObjectInputStream in = new ObjectInputStream(client.getInputStream());
                         ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
+                        ObjectInputStream in = new ObjectInputStream(client.getInputStream());
                         if (valor == 1) {
                                 out.writeObject("1," + ip.getHostAddress());
                                 this.brokers = (List<String>) in.readObject();
@@ -38,8 +37,8 @@ public class Broker extends Thread {
 
                                 for (int i = 0; i < brokers.size(); i++) {
                                         client = new Socket(Inet4Address.getByName(brokers.get(i)), 7777);
-                                        in = new ObjectInputStream(client.getInputStream());
                                         out = new ObjectOutputStream(client.getOutputStream());
+                                        in = new ObjectInputStream(client.getInputStream());
                                         out.writeObject("2," + ip.getHostAddress());
                                         System.out.println((String) in.readObject());
 
@@ -96,12 +95,16 @@ public class Broker extends Thread {
 
         public void addBroker(String broker) {
                 this.brokers.add(broker);
+                System.out.println(broker);
+
         }
 
         public void addPais(Pais pais)
         {
                 System.out.println("llego el pais "+ pais.getNombrePais() +" con "+ pais.getInfectados() +" infectados");
                 paises.add(pais);
+                paises.get(paises.size()-1).setBroker(this);
+                paises.get(paises.size()-1).setPeso(getCalculo());
                 paises.get(paises.size()-1).start();
         }
 
@@ -131,23 +134,24 @@ public class Broker extends Thread {
                         for (Pais p : paises) {
                                 p.start();
                         }
-                        while (true) {
-
+                        while (true)
+                        {
+                                sleep(100);
                                 for (String b : brokers) {
                                         dir_destino = (Inet4Address) Inet4Address.getByName(b);
                                         peso = this.call(dir_destino, 2);
-                                        if((peso-paises.size())/2>0)
+                                        if((paises.size()-peso)/2>0)
                                         {
-                                                for(int i=0; i<(peso-paises.size())/2;i++)
+                                                for(int i=0; i<(paises.size()-peso)/2;i++)
                                                 {
                                                         Socket client = new Socket(dir_destino, 7777);
-                                                        ObjectInputStream in = new ObjectInputStream(client.getInputStream());
                                                         ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
+                                                        ObjectInputStream in = new ObjectInputStream(client.getInputStream());
                                                         out.writeObject(paises.get(i));
-                                                        System.out.println((String) in.readObject());
                                                         if((boolean) in.readObject())
                                                         {
                                                                 System.out.println(paises.get(i).getNombrePais()+" con "+paises.get(i).getInfectados()+"infectados, enviado a " +dir_destino.getHostAddress());
+                                                                paises.get(i).interrupt();
                                                                 paises.remove(i);
                                                         }
                                                         client.close();

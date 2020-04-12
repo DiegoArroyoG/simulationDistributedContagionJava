@@ -1,13 +1,11 @@
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 
-public class Connection extends Thread {
+public class Connection extends Thread{
 
     Socket clientSocket;
     ObjectInputStream in;
@@ -43,6 +41,7 @@ public class Connection extends Thread {
             // TODO Auto-generated catch block
             e2.printStackTrace();
         }
+
         if(read instanceof Pais)
         {
             Pais pais = (Pais) read;
@@ -60,7 +59,8 @@ public class Connection extends Thread {
             if (info[0].equalsIgnoreCase("1")) {
                 try {
                     System.out.println("Se conecto uno nuevo con ip " + info[1] + "...");
-                    List<String> brokers = broker.getBrokers();
+                    List<String> brokers = new ArrayList<String>();
+                    brokers.addAll(broker.getBrokers());
                     brokers.add(broker.getIp());
                     out.writeObject(brokers);
                 } catch (Exception e) {
@@ -69,7 +69,7 @@ public class Connection extends Thread {
             }
             else if(info[0].equalsIgnoreCase("2")) {
                 try {
-                    System.out.println("Se esta presentando uno nuevo"+ info[1] + "...");
+                    System.out.println("Se esta presentando uno nuevo "+ info[1] + "...");
                     broker.addBroker(info[1]);
                     out.writeObject("Agregado por " + broker.getIp());
                 } catch (Exception e) {

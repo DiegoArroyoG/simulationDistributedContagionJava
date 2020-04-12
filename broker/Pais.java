@@ -1,8 +1,10 @@
+import java.io.Serializable;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.List;
 
-public class Pais extends Thread {
+public class Pais extends Thread implements Serializable{
+
         private String nombre;
         private int poblacion;
         private int peso;
@@ -56,7 +58,7 @@ public class Pais extends Thread {
                 while (true) {
                         this.infectados = this.infectados + 1;
                         try {
-                                System.out.println(this.peso*1000);
+                                System.out.println(nombre + " " +this.peso*1000);
                                 sleep(this.peso * 1000);
                         } catch (InterruptedException e) {
                                 // TODO Auto-generated catch block
