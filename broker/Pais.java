@@ -6,7 +6,9 @@ import java.io.Serializable;
 import java.net.Inet4Address;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Pais extends Thread implements Serializable{
 
@@ -19,10 +21,10 @@ public class Pais extends Thread implements Serializable{
         private float beta;
         private float gamma;
         private Inet4Address dir_ip;
-        private List<Pais> vecinos;
         private Broker broker_mine;
+        private HashMap <String,Inet4Address> vecinos;
 
-        public Pais(String nombre, String poblacion, String infectados, String pAis, String g, String ip)
+        public Pais(String nombre, String poblacion, String infectados, String pAis, String g, String ip, Map<String, Inet4Address> vecinos2)
                         throws UnknownHostException {
                 this.nombre = nombre;
                 this.poblacion = Integer.parseInt(poblacion);
@@ -33,6 +35,7 @@ public class Pais extends Thread implements Serializable{
                 this.gamma = Float.parseFloat(g);
                 this.dir_ip = (Inet4Address) Inet4Address.getByName(ip);
                 this.peso = 0;
+                this.vecinos = (HashMap<String, Inet4Address>) vecinos2;
         }
 
         public void setBroker(Broker bro) {
