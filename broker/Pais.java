@@ -24,10 +24,10 @@ public class Pais extends Thread implements Serializable {
         private float gamma;
         private Inet4Address dir_ip;
         private Broker broker_mine;
-        private HashMap<Integer, Inet4Address> vecinos;
+        private HashMap<Integer, Inet4Address> vecinos = new HashMap<Integer, Inet4Address>();
 
         public Pais(String nombre, String poblacion, String infectados, String pAis, String g, String ip,
-                        Map<Integer, Inet4Address> vecinos, int port) throws UnknownHostException {
+                        HashMap<Integer, Inet4Address> vecinos, int port) throws UnknownHostException {
                 this.nombre = nombre;
                 this.poblacion = Integer.parseInt(poblacion);
                 this.infectados = Integer.parseInt(infectados);

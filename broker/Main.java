@@ -35,14 +35,14 @@ public class Main {
     private static List<Pais> leerFichero(Inet4Address dir_origen) {
         String[] line2;
         List <Pais> paises_broker = new ArrayList <Pais> (); 
-        Map <Integer, Inet4Address> vecinos = new HashMap<Integer, Inet4Address>();
         try {
             Scanner input = new Scanner(new File("Config.txt"));
             while (input.hasNextLine()) {
                 line = input.nextLine().split(",");
+                HashMap <Integer, Inet4Address> vecinos = new HashMap<Integer, Inet4Address>();
                 for(int p = 6; p < line.length - 1; p++){
                     line2 = line[p].split("-");
-                    vecinos.put(Integer.parseInt(line2[0].trim()), (Inet4Address) Inet4Address.getByName(line[2].trim()));
+                    vecinos.put(Integer.parseInt(line2[0].trim()), (Inet4Address) Inet4Address.getByName(line2[1].trim()));
                 }
                 Pais p1 = new Pais(line[0].trim(), line[1].trim(), line[2].trim(), line[3].trim(), line[4].trim(), line[5].trim(), vecinos, Integer.parseInt(line[line.length-1].trim()));
                 
@@ -55,4 +55,3 @@ public class Main {
         }
         return paises_broker;
     }
-}
