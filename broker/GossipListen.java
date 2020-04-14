@@ -16,7 +16,7 @@ public class GossipListen extends Thread {
                     ServerSocket ListenSocket = new ServerSocket(pais.getPort());
                     Socket clientSocket = ListenSocket.accept();
 
-                    new Gossip(this.pais).reply(clientSocket);
+                    new Gossip(pais).reply(clientSocket);
 
                     ListenSocket.close();
             }

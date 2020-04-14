@@ -72,8 +72,7 @@ public class Pais extends Thread implements Serializable {
                 return this.dir_ip.getHostAddress();
         }
 
-        public int getPort()
-        {
+        public int getPort() {
                 return this.port;
         }
 
@@ -89,8 +88,7 @@ public class Pais extends Thread implements Serializable {
                 this.peso = calculo;
         }
 
-        public void setHilo(boolean hilo)
-        {
+        public void setHilo(boolean hilo) {
                 this.hilo = hilo;
         }
 
@@ -122,12 +120,13 @@ public class Pais extends Thread implements Serializable {
 
         }
 
-        public void call(Inet4Address dir_destino, int port_destino, String nueva_ip) throws IOException, ClassNotFoundException {
+        public void call(Inet4Address dir_destino, int port_destino, String nueva_ip)
+                        throws IOException, ClassNotFoundException {
                 Socket client = null;
                 try {
                         client = new Socket(dir_destino, port_destino);
                         DataOutputStream out = new DataOutputStream(client.getOutputStream());
-                        out.writeUTF("2," + nueva_ip + ","+ port);
+                        out.writeUTF("2," + nueva_ip + "," + port);
                 } catch (UnknownHostException e) {
                         System.out.println("Socket:" + e.getMessage());
                 } catch (EOFException e) {
@@ -146,7 +145,7 @@ public class Pais extends Thread implements Serializable {
         }
 
         public void start_listen() {
-                
+
         }
 
         public void init() {
@@ -157,10 +156,11 @@ public class Pais extends Thread implements Serializable {
         public void run() {
 
                 while (hilo) {
-                        if(infectados!=0){        
+
+                        if (infectados != 0) {
                                 this.infectados = this.infectados + 1;
                                 try {
-                                        System.out.println(nombre + " " + this.peso * 1000+ " "+ infectados);
+                                        System.out.println(nombre + " tiene " + infectados+ " infectados");
                                         if (infectados == poblacion * 0.5)
                                                 for (Map.Entry<Integer, Inet4Address> entry : vecinos.entrySet()) {
                                                         Integer port_destino = entry.getKey();
@@ -176,6 +176,14 @@ public class Pais extends Thread implements Serializable {
                                                                 e.printStackTrace();
                                                         }
                                                 }
+                                        sleep(this.peso * 1000);
+                                } catch (InterruptedException e) {
+                                        // TODO Auto-generated catch block
+                                        e.printStackTrace();
+                                }
+                        } else {
+                                System.out.println(nombre + " tiene " + infectados+ " infectados");
+                                try {
                                         sleep(this.peso * 1000);
                                 } catch (InterruptedException e) {
                                         // TODO Auto-generated catch block
