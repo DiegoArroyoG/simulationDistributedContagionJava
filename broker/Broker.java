@@ -104,6 +104,7 @@ public class Broker extends Thread implements Serializable{
                 System.out.println("llego el pais "+ pais.getNombrePais() +" con "+ pais.getInfectados() +" infectados");
                 paises.add(pais);
                 paises.get(paises.size()-1).setBroker(this);
+                paises.get(paises.size()-1).setIP(ip);
                 paises.get(paises.size()-1).setPeso(getCalculo());
                 paises.get(paises.size()-1).start();
         }
@@ -132,7 +133,7 @@ public class Broker extends Thread implements Serializable{
                                 p.setPeso(calculo);
                         }
                         for (Pais p : paises) {
-                                p.start();
+                                p.init();
                         }
                         while (true)
                         {

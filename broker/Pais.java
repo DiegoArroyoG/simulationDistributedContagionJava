@@ -45,6 +45,28 @@ public class Pais extends Thread implements Serializable {
                 this.broker_mine = bro;
         }
 
+        public void setIP(Inet4Address ip) {
+                this.dir_ip = ip;
+                for (Map.Entry<Integer, Inet4Address> entry : vecinos.entrySet()) {
+                        Integer port_destino = entry.getKey();
+                        Inet4Address dir_destino = entry.getValue();
+                        try {
+                                System.out.print(nombre + " contagio a ");
+                                call(dir_destino, port_destino, ip.getHostAddress());
+                        } catch (ClassNotFoundException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                        } catch (IOException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                        }
+                }
+        }
+
+        public void setInfectados(int infectados) {
+                this.infectados = this.infectados + infectados;
+        }
+
         public String getNombrePais() {
                 return this.nombre;
         }
@@ -65,10 +87,16 @@ public class Pais extends Thread implements Serializable {
                 this.peso = calculo;
         }
 
+        public void changeIpVecino(String ip2c, Integer port2c) throws UnknownHostException {
+                vecinos.put(port2c, (Inet4Address) Inet4Address.getByName(ip2c));
+        }
+
         public void call(Inet4Address dir_destino, int port_destino) throws IOException, ClassNotFoundException {
                 Socket client = null;
                 try {
                         client = new Socket(dir_destino, port_destino);
+                        ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
+                        out.writeObject("1,");
 
                 } catch (UnknownHostException e) {
                         System.out.println("Socket:" + e.getMessage());
@@ -87,42 +115,77 @@ public class Pais extends Thread implements Serializable {
 
         }
 
-        public void run() {
-                if (infectados == 0) {
-                        ServerSocket ListenSocket;
-                        try {
-                                ListenSocket = new ServerSocket(port);
-                                ListenSocket.accept();
-                                ListenSocket.close();
-                        } catch (IOException e1) {
-                                // TODO Auto-generated catch block
-                                e1.printStackTrace();
-                        }
+        public void call(Inet4Address dir_destino, int port_destino, String nueva_ip) throws IOException, ClassNotFoundException {
+                Socket client = null;
+                try {
+                        client = new Socket(dir_destino, port_destino);
+                        ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
+                        out.writeObject("2," + nueva_ip + port);
+
+                } catch (UnknownHostException e) {
+                        System.out.println("Socket:" + e.getMessage());
+                } catch (EOFException e) {
+                        System.out.println("EOF:" + e.getMessage());
+                } catch (IOException e) {
+                        System.out.println("readline:" + e.getMessage());
+                } finally {
+                        if (client != null)
+                                try {
+                                        client.close();
+                                } catch (IOException e) {
+                                        System.out.println("close:" + e.getMessage());
+                                }
                 }
-                infectados = 1;
-                System.out.println("XXXXXXXXXXXXXXXXXXX QUE COMIENCE EL JUEGO XXXXXXXXXXXXXXXXXXXXXXXXXXXx");
+
+        }
+
+        public void start_listen() {
+                try {
+                        while (true) {
+                                ServerSocket ListenSocket = new ServerSocket(port);
+                                Socket clientSocket = ListenSocket.accept();
+
+                                new Gossip(this).reply(clientSocket);
+
+                                ListenSocket.close();
+                        }
+                } catch (Exception e) {
+                        System.out.println("Error de entrada/salida PAIS." + e.getMessage());
+                }
+        }
+
+        public void init() {
+                this.start();
+                start_listen();
+        }
+
+        public void run() {
+
                 while (true) {
-                        this.infectados = this.infectados + 1;
-                        try {
-                                System.out.println(nombre + " " + this.peso * 1000);
-                                if (infectados == poblacion * 0.5)
-                                        for (Map.Entry<Integer, Inet4Address> entry : vecinos.entrySet()) {
-                                                Integer port_destino = entry.getKey();
-                                                Inet4Address dir_destino = entry.getValue();
-                                                try {
-                                                        call(dir_destino, port_destino);
-                                                } catch (ClassNotFoundException e) {
-                                                        // TODO Auto-generated catch block
-                                                        e.printStackTrace();
-                                                } catch (IOException e) {
-                                                        // TODO Auto-generated catch block
-                                                        e.printStackTrace();
+                        if(infectados!=0){        
+                                this.infectados = this.infectados + 1;
+                                try {
+                                        System.out.println(nombre + " " + this.peso * 1000);
+                                        if (infectados == poblacion * 0.5)
+                                                for (Map.Entry<Integer, Inet4Address> entry : vecinos.entrySet()) {
+                                                        Integer port_destino = entry.getKey();
+                                                        Inet4Address dir_destino = entry.getValue();
+                                                        try {
+                                                                System.out.print(nombre + " contagio a ");
+                                                                call(dir_destino, port_destino);
+                                                        } catch (ClassNotFoundException e) {
+                                                                // TODO Auto-generated catch block
+                                                                e.printStackTrace();
+                                                        } catch (IOException e) {
+                                                                // TODO Auto-generated catch block
+                                                                e.printStackTrace();
+                                                        }
                                                 }
-                                        }
-                                sleep(this.peso * 1000);
-                        } catch (InterruptedException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
+                                        sleep(this.peso * 1000);
+                                } catch (InterruptedException e) {
+                                        // TODO Auto-generated catch block
+                                        e.printStackTrace();
+                                }
                         }
                 }
 
