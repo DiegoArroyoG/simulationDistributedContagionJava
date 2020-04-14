@@ -75,6 +75,11 @@ public class Pais extends Thread implements Serializable {
                 return this.dir_ip.getHostAddress();
         }
 
+        public int getPort()
+        {
+                return this.port;
+        }
+
         public int getPoblacion() {
                 return this.poblacion;
         }
@@ -140,23 +145,12 @@ public class Pais extends Thread implements Serializable {
         }
 
         public void start_listen() {
-                try {
-                        while (true) {
-                                ServerSocket ListenSocket = new ServerSocket(port);
-                                Socket clientSocket = ListenSocket.accept();
-
-                                new Gossip(this).reply(clientSocket);
-
-                                ListenSocket.close();
-                        }
-                } catch (Exception e) {
-                        System.out.println("Error de entrada/salida PAIS." + e.getMessage());
-                }
+                
         }
 
         public void init() {
+                new GossipListen(this).start();
                 this.start();
-                start_listen();
         }
 
         public void run() {
