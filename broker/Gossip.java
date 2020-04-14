@@ -1,16 +1,12 @@
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Gossip extends Thread {
 
     Socket clientSocket;
     DataInputStream in;
-    DataOutputStream out;
     Pais pais;
 
     public Gossip(Pais pais) {
@@ -40,12 +36,12 @@ public class Gossip extends Thread {
         }
 
         String[] info = null;
-        info = read.toString().split(",");
+        info = read.split(",");
         if (info[0].equalsIgnoreCase("1")) {
             pais.setInfectados(1);
             System.out.println(pais.getNombrePais());
         } else if (info[0].equalsIgnoreCase("2")) {
-            System.out.println("Cambio de direccion Ip de pais...");
+            System.out.println(pais.getNombrePais() + " recibio cambio de direccion Ip de vecino a " + info[1]);
             try {
                 pais.changeIpVecino(info[1], Integer.parseInt(info[2]));
             } catch (NumberFormatException e) {

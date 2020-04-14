@@ -1,14 +1,11 @@
+import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Inet4Address;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Pais extends Thread implements Serializable {
@@ -25,6 +22,7 @@ public class Pais extends Thread implements Serializable {
         private Inet4Address dir_ip;
         private Broker broker_mine;
         private HashMap<Integer, Inet4Address> vecinos = new HashMap<Integer, Inet4Address>();
+        private boolean hilo = true;
 
         public Pais(String nombre, String poblacion, String infectados, String pAis, String g, String ip,
                         HashMap<Integer, Inet4Address> vecinos, int port) throws UnknownHostException {
@@ -51,7 +49,6 @@ public class Pais extends Thread implements Serializable {
                         Integer port_destino = entry.getKey();
                         Inet4Address dir_destino = entry.getValue();
                         try {
-                                System.out.print(nombre + " contagio a ");
                                 call(dir_destino, port_destino, ip.getHostAddress());
                         } catch (ClassNotFoundException e) {
                                 // TODO Auto-generated catch block
@@ -92,6 +89,11 @@ public class Pais extends Thread implements Serializable {
                 this.peso = calculo;
         }
 
+        public void setHilo(boolean hilo)
+        {
+                this.hilo = hilo;
+        }
+
         public void changeIpVecino(String ip2c, Integer port2c) throws UnknownHostException {
                 vecinos.put(port2c, (Inet4Address) Inet4Address.getByName(ip2c));
         }
@@ -100,8 +102,8 @@ public class Pais extends Thread implements Serializable {
                 Socket client = null;
                 try {
                         client = new Socket(dir_destino, port_destino);
-                        ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
-                        out.writeObject("1,");
+                        DataOutputStream out = new DataOutputStream(client.getOutputStream());
+                        out.writeUTF("1,");
 
                 } catch (UnknownHostException e) {
                         System.out.println("Socket:" + e.getMessage());
@@ -124,9 +126,8 @@ public class Pais extends Thread implements Serializable {
                 Socket client = null;
                 try {
                         client = new Socket(dir_destino, port_destino);
-                        ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
-                        out.writeObject("2," + nueva_ip + port);
-
+                        DataOutputStream out = new DataOutputStream(client.getOutputStream());
+                        out.writeUTF("2," + nueva_ip + ","+ port);
                 } catch (UnknownHostException e) {
                         System.out.println("Socket:" + e.getMessage());
                 } catch (EOFException e) {
@@ -155,11 +156,11 @@ public class Pais extends Thread implements Serializable {
 
         public void run() {
 
-                while (true) {
+                while (hilo) {
                         if(infectados!=0){        
                                 this.infectados = this.infectados + 1;
                                 try {
-                                        System.out.println(nombre + " " + this.peso * 1000);
+                                        System.out.println(nombre + " " + this.peso * 1000+ " "+ infectados);
                                         if (infectados == poblacion * 0.5)
                                                 for (Map.Entry<Integer, Inet4Address> entry : vecinos.entrySet()) {
                                                         Integer port_destino = entry.getKey();
