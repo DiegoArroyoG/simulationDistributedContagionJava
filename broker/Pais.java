@@ -55,7 +55,8 @@ public class Pais extends Thread implements Serializable {
         }
 
         public void setInfectados(int infectados) {
-                this.infectados = this.infectados + infectados;
+                if(this.infectados == 0)
+                        this.infectados = this.infectados + infectados;
         }
 
         public String getNombrePais() {
@@ -149,15 +150,12 @@ public class Pais extends Thread implements Serializable {
 
         public void run() {
                 boolean contagioso = true;
-                int interacion = 0;
                 while (hilo) {
 
-                        if (infectados != 0 && vulnerable > 0) {
+                        if (infectados != 0 && vulnerable-1 > 0) {
 
-                                interacion = infectados * 3;
-
-                                this.infectados = this.infectados + interacion;
-                                this.vulnerable = this.vulnerable - interacion;
+                                this.infectados = this.infectados + 1;
+                                this.vulnerable = this.vulnerable - 1;
                                 try {
                                         System.out.println(nombre + " tiene " + infectados+ " infectados");
                                         if (infectados > poblacion * 0.3 && contagioso)
