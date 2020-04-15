@@ -1,7 +1,5 @@
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -11,41 +9,30 @@ import javax.swing.JTabbedPane;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.Inet4Address;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Vector;
 import java.awt.event.ActionEvent;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JTextArea;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-import java.awt.GridLayout;
 import javax.swing.JTextField;
-import java.awt.FlowLayout;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 
 import java.awt.Font;
 import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
 
 public class GUIDistribuidos extends JFrame {
 
 	private HashMap<String, List<String>> vecinos;
 
 	private JPanel contentPane;
-	private JTable IngresoTabla;
-	private JTable tableInicial;
 	private JTable table;
 	private static JTextArea textAreaImpresion;
 	private JTextField textFieldOrigen;
@@ -164,7 +151,7 @@ public class GUIDistribuidos extends JFrame {
 						bw.append(str);
 					}
 					bw.close();
-					JOptionPane.showMessageDialog(null, "Operación realizada correctamente");
+					JOptionPane.showMessageDialog(null, "Operacion realizada correctamente");
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
