@@ -110,12 +110,11 @@ public class Broker extends Thread implements Serializable{
         }
 
         public int getCalculo() {
-                /**int x = 0;
+                int x = 0;
                 for (Pais p : this.paises) {
                         x = x + p.getPoblacion();
                 }
-                return x;**/
-                return paises.size();
+                return x;
         }
 
         public void init() {
@@ -128,6 +127,7 @@ public class Broker extends Thread implements Serializable{
                 int calculo;
                 try {
                         int peso;
+                        int miPeso;
                         Inet4Address dir_destino;
                         calculo = getCalculo();
                         for (Pais p : paises) {
@@ -142,21 +142,40 @@ public class Broker extends Thread implements Serializable{
                                 for (String b : brokers) {
                                         dir_destino = (Inet4Address) Inet4Address.getByName(b);
                                         peso = this.call(dir_destino, 2);
-                                        if((paises.size()-peso)/2>0)
+                                        miPeso = this.getCalculo();
+                                        if(miPeso>peso)
                                         {
-                                                for(int i=0; i<(paises.size()-peso)/2;i++)
+                                                int sum = miPeso + peso;
+                                                int n = this.paises.size();
+
+                                                boolean C[][] = new boolean[n + 1][sum + 1]; 
+
+                                                for (int i = 1; i <= n; i++) 
+                                                { 
+                                                        for (int j = 1; j <= sum; j++) 
+                                                        { 
+                                                                C[i][j] = C[i - 1][j]; 
+                                                
+                                                                if (this.paises.get(i-1).getPoblacion() <= j) 
+                                                                        C[i][j] |= C[i - 1][j - this.paises.get(i-1).getPoblacion()]; 
+                                                        } 
+                                                } 
+
+                                                for (int i = sum / 2; i >= 0; i--) 
                                                 {
-                                                        Socket client = new Socket(dir_destino, 7777);
-                                                        ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
-                                                        ObjectInputStream in = new ObjectInputStream(client.getInputStream());
-                                                        out.writeObject(paises.get(i));
-                                                        if((boolean) in.readObject())
-                                                        {
-                                                                System.out.println(paises.get(i).getNombrePais()+" con "+paises.get(i).getInfectados()+"infectados, enviado a " +dir_destino.getHostAddress());
-                                                                paises.get(i).setHilo(false);
-                                                                paises.remove(i);
+                                                        if (C[n][i] == true) {
+                                                                Socket client = new Socket(dir_destino, 7777);
+                                                                ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
+                                                                ObjectInputStream in = new ObjectInputStream(client.getInputStream());
+                                                                out.writeObject(paises.get(i));
+                                                                if((boolean) in.readObject())
+                                                                {
+                                                                        System.out.println(paises.get(i).getNombrePais()+" con "+paises.get(i).getInfectados()+"infectados, enviado a " +dir_destino.getHostAddress());
+                                                                        paises.get(i).setHilo(false);
+                                                                        paises.remove(i);
+                                                                }
+                                                                client.close();
                                                         }
-                                                        client.close();
                                                 }
                                         }
                                         sleep(500);
