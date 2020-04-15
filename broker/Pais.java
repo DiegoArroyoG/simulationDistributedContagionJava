@@ -139,10 +139,6 @@ public class Pais extends Thread implements Serializable {
 
         }
 
-        public void start_listen() {
-
-        }
-
         public void init() {
                 new GossipListen(this).start();
                 this.start();
@@ -153,7 +149,7 @@ public class Pais extends Thread implements Serializable {
                 while (hilo) {
 
                         if (this.infectados != 0 && this.vulnerable-1 > 0) {
-                                
+
                                 this.infectados = this.infectados + 1;
                                 this.vulnerable = this.vulnerable - 1;
                                 try {

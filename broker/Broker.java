@@ -1,7 +1,11 @@
 import java.net.Inet4Address;
 import java.net.Socket;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -145,34 +149,30 @@ public class Broker extends Thread implements Serializable{
                                         miPeso = this.getCalculo();
                                         if(miPeso>peso)
                                         {
-                                                int sum = miPeso + peso;
-                                                int n = this.paises.size();
-
-                                                boolean C[][] = new boolean[n + 1][sum + 1]; 
-
-                                                for (int i = 1; i <= n; i++) 
-                                                { 
-                                                        for (int j = 1; j <= sum; j++) 
-                                                        { 
-                                                                C[i][j] = C[i - 1][j]; 
-                                                
-                                                                if (this.paises.get(i-1).getPoblacion() <= j) 
-                                                                        C[i][j] |= C[i - 1][j - this.paises.get(i-1).getPoblacion()]; 
-                                                        } 
-                                                } 
-
-                                                for (int i = sum / 2; i >= 0; i--) 
+                                                Map<Integer, Integer>  poblaciones= new HashMap<Integer, Integer>();
+                                                for(int i=0; i<paises.size();i++)
                                                 {
-                                                        if (C[n][i] == true) {
+                                                        poblaciones.put(i, paises.get(i).getPoblacion());
+                                                }
+                                                poblaciones = poblaciones.entrySet().stream().sorted((Map.Entry.<Integer, Integer>comparingByValue().reversed())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+                                                int local=0;
+                                                int remote=peso;
+
+                                                for (Map.Entry<Integer, Integer> entry : poblaciones.entrySet()) {
+                                                        if(local<remote)
+                                                        {
+                                                                local = local + entry.getValue();
+                                                        }else{
+                                                                remote = remote + entry.getValue();
                                                                 Socket client = new Socket(dir_destino, 7777);
                                                                 ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
                                                                 ObjectInputStream in = new ObjectInputStream(client.getInputStream());
-                                                                out.writeObject(paises.get(i));
+                                                                out.writeObject(paises.get(entry.getKey()));
                                                                 if((boolean) in.readObject())
                                                                 {
-                                                                        System.out.println(paises.get(i).getNombrePais()+" con "+paises.get(i).getInfectados()+"infectados, enviado a " +dir_destino.getHostAddress());
-                                                                        paises.get(i).setHilo(false);
-                                                                        paises.remove(i);
+                                                                        System.out.println(paises.get(entry.getKey()).getNombrePais()+" con "+paises.get(entry.getKey()).getInfectados()+"infectados, enviado a " +dir_destino.getHostAddress());
+                                                                        paises.get(entry.getKey()).setHilo(false);
+                                                                        paises.remove((int)entry.getKey());
                                                                 }
                                                                 client.close();
                                                         }
