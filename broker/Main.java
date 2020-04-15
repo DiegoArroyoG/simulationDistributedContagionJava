@@ -83,7 +83,7 @@ public class Main extends Thread {
         }
 
         if(!destino.equals("")){
-            dir_destino = (Inet4Address) Inet4Address.getByName(args1[1]);
+            dir_destino = (Inet4Address) Inet4Address.getByName(destino);
             bro.call(dir_destino, 1);
         }
 					

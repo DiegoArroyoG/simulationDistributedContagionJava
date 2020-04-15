@@ -21,7 +21,7 @@ public class Pais extends Thread implements Serializable {
         private HashMap<Integer, Inet4Address> vecinos = new HashMap<Integer, Inet4Address>();
         private boolean hilo = true;
 
-        public Pais(String nombre, String poblacion, String infectados, String vulnerabilidad, String aislamiento, String ip,
+        public Pais(String nombre, String poblacion, String infectados, String aislamiento, String vulnerabilidad, String ip,
                         HashMap<Integer, Inet4Address> vecinos, int port) throws UnknownHostException {
                 this.nombre = nombre;
                 this.poblacion = Integer.parseInt(poblacion);
@@ -152,8 +152,8 @@ public class Pais extends Thread implements Serializable {
                 boolean contagioso = true;
                 while (hilo) {
 
-                        if (infectados != 0 && vulnerable-1 > 0) {
-
+                        if (this.infectados != 0 && this.vulnerable-1 > 0) {
+                                
                                 this.infectados = this.infectados + 1;
                                 this.vulnerable = this.vulnerable - 1;
                                 try {
@@ -176,7 +176,7 @@ public class Pais extends Thread implements Serializable {
                                                         }
                                                 }
                                         }
-                                        sleep(this.peso * 1000);
+                                        sleep(this.peso * 2);
                                 } catch (InterruptedException e) {
                                         // TODO Auto-generated catch block
                                         e.printStackTrace();
@@ -184,7 +184,7 @@ public class Pais extends Thread implements Serializable {
                         } else {
                                 System.out.println(nombre + " tiene " + infectados+ " infectados");
                                 try {
-                                        sleep(this.peso * 1000);
+                                        sleep(this.peso * 2);
                                 } catch (InterruptedException e) {
                                         // TODO Auto-generated catch block
                                         e.printStackTrace();
