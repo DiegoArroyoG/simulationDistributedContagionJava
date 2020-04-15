@@ -39,7 +39,7 @@ public class Gossip extends Thread {
         info = read.split(",");
         if (info[0].equalsIgnoreCase("1")) {
             this.pais.setInfectados(1);
-            System.out.println(pais.getNombrePais());
+            System.out.println(pais.getNombrePais() +" esta siendo infecto");
         } else if (info[0].equalsIgnoreCase("2")) {
             System.out.println(pais.getNombrePais() + " recibio cambio de direccion Ip de vecino a " + info[1]);
             try {

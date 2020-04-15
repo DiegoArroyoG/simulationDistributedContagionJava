@@ -47,9 +47,6 @@ public class Broker extends Thread implements Serializable{
                                         System.out.println((String) in.readObject());
 
                                 }
-                                System.out.println("Check in exitoso");
-                                for (int i = 0; i < brokers.size(); i++)
-                                        System.out.println(brokers.get(i));
                                 return -1;
                         } else if (valor == 2) {
                                 out.writeObject("3," + ip.getHostAddress());
@@ -76,10 +73,7 @@ public class Broker extends Thread implements Serializable{
                 try {
                         while (true) {
                                 ServerSocket ListenSocket = new ServerSocket(7777);
-                                System.out.println("Esperando conexión...");                              
                                 Socket clientSocket = ListenSocket.accept();
-                                System.out.println("Se conecto un broker...");
-
                                 new Connection(this).reply(clientSocket);
 
                                 ListenSocket.close();
@@ -99,8 +93,6 @@ public class Broker extends Thread implements Serializable{
 
         public void addBroker(String broker) {
                 this.brokers.add(broker);
-                System.out.println(broker);
-
         }
 
         public void addPais(Pais pais)
@@ -149,34 +141,28 @@ public class Broker extends Thread implements Serializable{
                                         miPeso = this.getCalculo();
                                         if(miPeso>peso)
                                         {
-                                                Map<Integer, Integer>  poblaciones= new HashMap<Integer, Integer>();
+                                                int minPoblacion = 0;
+                                                int index = 0;
                                                 for(int i=0; i<paises.size();i++)
-                                                {
-                                                        poblaciones.put(i, paises.get(i).getPoblacion());
-                                                }
-                                                poblaciones = poblaciones.entrySet().stream().sorted((Map.Entry.<Integer, Integer>comparingByValue().reversed())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-                                                int local=0;
-                                                int remote=peso;
-
-                                                for (Map.Entry<Integer, Integer> entry : poblaciones.entrySet()) {
-                                                        if(local<remote)
+                                                {       
+                                                        if(paises.get(i).getPoblacion()<minPoblacion)
                                                         {
-                                                                local = local + entry.getValue();
-                                                        }else{
-                                                                remote = remote + entry.getValue();
-                                                                Socket client = new Socket(dir_destino, 7777);
-                                                                ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
-                                                                ObjectInputStream in = new ObjectInputStream(client.getInputStream());
-                                                                out.writeObject(paises.get(entry.getKey()));
-                                                                if((boolean) in.readObject())
-                                                                {
-                                                                        System.out.println(paises.get(entry.getKey()).getNombrePais()+" con "+paises.get(entry.getKey()).getInfectados()+"infectados, enviado a " +dir_destino.getHostAddress());
-                                                                        paises.get(entry.getKey()).setHilo(false);
-                                                                        paises.remove((int)entry.getKey());
-                                                                }
-                                                                client.close();
+                                                                index = i;
+                                                                minPoblacion = paises.get(i).getPoblacion();
                                                         }
                                                 }
+
+                                                Socket client = new Socket(dir_destino, 7777);
+                                                ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
+                                                ObjectInputStream in = new ObjectInputStream(client.getInputStream());
+                                                out.writeObject(paises.get(index));
+                                                if((boolean) in.readObject())
+                                                {
+                                                        System.out.println(paises.get(index).getNombrePais()+" con "+paises.get(index).getInfectados()+"infectados, enviado a " +dir_destino.getHostAddress());
+                                                        paises.get(index).setHilo(false);
+                                                        paises.remove(index);
+                                                }
+                                                client.close();
                                         }
                                         sleep(500);
                                 }

@@ -157,11 +157,11 @@ public class Pais extends Thread implements Serializable {
                                         if (infectados > poblacion * 0.3 && contagioso)
                                         {
                                                 contagioso = false;
+                                                System.out.print(nombre + " esta contagiando ");
                                                 for (Map.Entry<Integer, Inet4Address> entry : vecinos.entrySet()) {
                                                         Integer port_destino = entry.getKey();
                                                         Inet4Address dir_destino = entry.getValue();
                                                         try {
-                                                                System.out.print(nombre + " contagio a ");
                                                                 call(dir_destino, port_destino);
                                                         } catch (ClassNotFoundException e) {
                                                                 // TODO Auto-generated catch block
