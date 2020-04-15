@@ -1,4 +1,3 @@
-import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
 import java.net.Inet4Address;
