@@ -14,25 +14,19 @@ public class Pais extends Thread implements Serializable {
         private int poblacion;
         private int peso;
         private int infectados;
-        private int recuperados;
         private int port;
-        private float vulnerable;
-        private float beta;
-        private float gamma;
+        private int vulnerable;
         private Inet4Address dir_ip;
         private Broker broker_mine;
         private HashMap<Integer, Inet4Address> vecinos = new HashMap<Integer, Inet4Address>();
         private boolean hilo = true;
 
-        public Pais(String nombre, String poblacion, String infectados, String pAis, String g, String ip,
+        public Pais(String nombre, String poblacion, String infectados, String vulnerabilidad, String aislamiento, String ip,
                         HashMap<Integer, Inet4Address> vecinos, int port) throws UnknownHostException {
                 this.nombre = nombre;
                 this.poblacion = Integer.parseInt(poblacion);
                 this.infectados = Integer.parseInt(infectados);
-                this.recuperados = 0;
-                this.vulnerable = Integer.parseInt(poblacion) - Integer.parseInt(infectados);
-                this.beta = 1 - Float.parseFloat(pAis);
-                this.gamma = Float.parseFloat(g);
+                this.vulnerable = Integer.parseInt(poblacion) - Integer.parseInt(infectados) - (int)(Integer.parseInt(poblacion)*Float.parseFloat(aislamiento));
                 this.dir_ip = (Inet4Address) Inet4Address.getByName(ip);
                 this.peso = 0;
                 this.vecinos.putAll(vecinos);
@@ -154,14 +148,21 @@ public class Pais extends Thread implements Serializable {
         }
 
         public void run() {
-
+                boolean contagioso = true;
+                int interacion = 0;
                 while (hilo) {
 
-                        if (infectados != 0) {
-                                this.infectados = this.infectados + 1;
+                        if (infectados != 0 && vulnerable > 0) {
+
+                                interacion = infectados * 3;
+
+                                this.infectados = this.infectados + interacion;
+                                this.vulnerable = this.vulnerable - interacion;
                                 try {
                                         System.out.println(nombre + " tiene " + infectados+ " infectados");
-                                        if (infectados == poblacion * 0.5)
+                                        if (infectados > poblacion * 0.3 && contagioso)
+                                        {
+                                                contagioso = false;
                                                 for (Map.Entry<Integer, Inet4Address> entry : vecinos.entrySet()) {
                                                         Integer port_destino = entry.getKey();
                                                         Inet4Address dir_destino = entry.getValue();
@@ -176,6 +177,7 @@ public class Pais extends Thread implements Serializable {
                                                                 e.printStackTrace();
                                                         }
                                                 }
+                                        }
                                         sleep(this.peso * 1000);
                                 } catch (InterruptedException e) {
                                         // TODO Auto-generated catch block
