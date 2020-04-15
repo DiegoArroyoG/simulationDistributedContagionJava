@@ -55,7 +55,7 @@ public class Pais extends Thread implements Serializable {
         }
 
         public void setInfectados(int infectados) {
-                if(infectados == 0)
+                if(this.infectados == 0)
                         this.infectados = this.infectados + infectados;
         }
 
