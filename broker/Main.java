@@ -1,22 +1,25 @@
+import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
 import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
-public class Main {
+public class Main extends Thread {
 
     private static String[] line;
     private static String[] args1;
     public static Inet4Address dir_origen;
     private static List<Pais> paises_broker;
     public static List<String> paises;
-    
+    public static  Broker bro;
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws UnknownHostException{
     		args1 = args;
+    		
            GUIDistribuidos.main();
     
     }
@@ -49,17 +52,13 @@ public class Main {
     	return paises_broker;
     }
     
-    public static void init() throws IOException, ClassNotFoundException {
+   /* public static void init() throws IOException, ClassNotFoundException {
         System.out.println(Inet4Address.getLocalHost().getHostAddress());
         Inet4Address dir_destino = null;
-        
-        
-        dir_origen =  (Inet4Address) Inet4Address.getByName(args1[0]);
-      
-        
+   
         List <Pais> paises_broker = leerFichero(dir_origen);
         
-        Broker bro = new Broker(dir_origen, paises_broker);
+        bro = new Broker(dir_origen, paises_broker);
         for(Pais a : paises_broker){
             a.setBroker(bro);
         }
@@ -69,6 +68,26 @@ public class Main {
             bro.call(dir_destino, 1);
         }
 
-        bro.init(); 
+        
+    }*/
+    
+    public static void iniBroker(String origen, String destino) throws ClassNotFoundException, IOException {
+    	System.out.println(Inet4Address.getLocalHost().getHostAddress());
+        Inet4Address dir_destino = null;
+        dir_origen = (Inet4Address) Inet4Address.getByName(origen);
+        List <Pais> paises_broker = leerFichero(dir_origen);
+        
+        bro = new Broker(dir_origen, paises_broker);
+        for(Pais a : paises_broker){
+            a.setBroker(bro);
+        }
+
+        if(!destino.equals("")){
+            dir_destino = (Inet4Address) Inet4Address.getByName(args1[1]);
+            bro.call(dir_destino, 1);
+        }
+					
+					bro.init();
+			
     }
 }

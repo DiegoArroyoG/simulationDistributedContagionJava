@@ -72,7 +72,7 @@ public class Broker extends Thread implements Serializable{
                 try {
                         while (true) {
                                 ServerSocket ListenSocket = new ServerSocket(7777);
-                                System.out.println("Esperando conexión...");
+                                System.out.println("Esperando conexión...");                              
                                 Socket clientSocket = ListenSocket.accept();
                                 System.out.println("Se conecto un broker...");
 
@@ -119,6 +119,7 @@ public class Broker extends Thread implements Serializable{
         }
 
         public void init() {
+        	
                 this.start();
                 start_listen();
         }
