@@ -9,33 +9,24 @@ import java.util.Scanner;
 public class Main {
 
     private static String[] line;
+    private static String[] args1;
+    public static Inet4Address dir_origen;
+    private static List<Pais> paises_broker;
+    public static List<String> paises;
+    
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
-        System.out.println(Inet4Address.getLocalHost().getHostAddress());
-        Inet4Address dir_origen = null , dir_destino = null;
-        
-        dir_origen =  (Inet4Address) Inet4Address.getByName(args[0]);
-        List <Pais> paises_broker = leerFichero(dir_origen);
-        
-        Broker bro = new Broker(dir_origen, paises_broker);
-        for(Pais a : paises_broker){
-            a.setBroker(bro);
-        }
-
-        if(args.length > 1){
-            dir_destino = (Inet4Address) Inet4Address.getByName(args[1]);
-            bro.call(dir_destino, 1);
-        }
-
-        bro.init();      
+    public static void main(String[] args){
+    		args1 = args;
+           GUIDistribuidos.main();
+    
     }
 
-    private static List<Pais> leerFichero(Inet4Address dir_origen) {
+    static List<Pais> leerFichero(Inet4Address dir_origen) {
         String[] line2;
-        List <Pais> paises_broker = new ArrayList <Pais> (); 
+        paises_broker = new ArrayList <Pais> (); 
         try {
             Scanner input = new Scanner(new File("Config.txt"));
-            while (input.hasNextLine()) {
+            while (input.hasNextLine()) {       
                 line = input.nextLine().split(",");
                 HashMap <Integer, Inet4Address> vecinos = new HashMap<Integer, Inet4Address>();
                 for(int p = 6; p < line.length - 1; p++){
@@ -52,5 +43,32 @@ public class Main {
             e.printStackTrace();
         }
         return paises_broker;
+    }
+    
+    public static List<Pais> getPaises_Broker(){
+    	return paises_broker;
+    }
+    
+    public static void init() throws IOException, ClassNotFoundException {
+        System.out.println(Inet4Address.getLocalHost().getHostAddress());
+        Inet4Address dir_destino = null;
+        
+        
+        dir_origen =  (Inet4Address) Inet4Address.getByName(args1[0]);
+      
+        
+        List <Pais> paises_broker = leerFichero(dir_origen);
+        
+        Broker bro = new Broker(dir_origen, paises_broker);
+        for(Pais a : paises_broker){
+            a.setBroker(bro);
+        }
+
+        if(args1.length > 1){
+            dir_destino = (Inet4Address) Inet4Address.getByName(args1[1]);
+            bro.call(dir_destino, 1);
+        }
+
+        bro.init(); 
     }
 }
