@@ -93,7 +93,7 @@ public class Broker extends Thread implements Serializable{
 
         public void addPais(Pais pais)
         {
-                System.out.println("llego el pais "+ pais.getNombrePais() +" con "+ pais.getInfectados() +" infectados");
+                System.out.println("Balanceando ---------> llego el pais "+ pais.getNombrePais() +" con "+ pais.getInfectados() +" infectados");
                 paises.add(pais);
                 paises.get(paises.size()-1).setBroker(this);
                 paises.get(paises.size()-1).setIP(ip);
@@ -142,7 +142,7 @@ public class Broker extends Thread implements Serializable{
                                                         out.writeObject(paises.get(index));
                                                         if((boolean) in.readObject())
                                                         {
-                                                                System.out.println(paises.get(index).getNombrePais()+" con "+paises.get(index).getInfectados()+"infectados, enviado a " +dir_destino.getHostAddress());
+                                                                System.out.println("Balanceando --------> "+paises.get(index).getNombrePais()+" con "+paises.get(index).getInfectados()+" infectados, enviado a " +dir_destino.getHostAddress());
                                                                 paises.get(index).setHilo(false);
                                                                 paises.remove(index);
                                                         }
