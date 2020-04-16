@@ -172,7 +172,7 @@ public class Pais extends Thread implements Serializable {
                                                         }
                                                 }
                                         }
-                                        sleep(this.peso * 2);
+                                        sleep(this.peso * 1000);
                                 } catch (InterruptedException e) {
                                         // TODO Auto-generated catch block
                                         e.printStackTrace();
@@ -180,7 +180,7 @@ public class Pais extends Thread implements Serializable {
                         } else {
                                 System.out.println(nombre + " tiene " + infectados+ " infectados");
                                 try {
-                                        sleep(this.peso * 2);
+                                        sleep(this.peso * 1000);
                                 } catch (InterruptedException e) {
                                         // TODO Auto-generated catch block
                                         e.printStackTrace();
